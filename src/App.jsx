@@ -326,7 +326,7 @@ export default function App() {
             <div style={tile}>
               <div data-tile-title style={tileTitle}>Software</div>
               <div style={{ fontSize: 14, color: "#3a4250" }}>
-                Bespoke apps & automations that embed ML/NLP into real workflows—prototyped with users and shipped fast,
+                Bespoke apps & automations that embed Machine Learning (ML) and Natural Language Processing (NLP) into real workflows—prototyped with users and shipped fast,
                 with measurement baked in.
               </div>
               <details style={{ marginTop: 8 }}>
