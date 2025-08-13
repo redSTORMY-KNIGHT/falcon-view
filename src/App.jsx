@@ -543,7 +543,7 @@ export default function App() {
               }}
             />
             <p id="founder-text" style={{ margin: 0, maxWidth: 860 }}>
-              Alex Francois — Former NFL Director of Business Strategy (8 years) and led the global launch of VALORANT esports at Riot Games. I help organizations harness AI through strategy and custom software—and partner with domain experts to co-build niche SaaS where we see real, defensible value.
+              Alex Francois — Former NFL Director of Business Strategy and led the global launch of VALORANT esports at Riot Games. I help organizations harness AI through strategy and custom software—and partner with domain experts to co-build niche SaaS where we see real, defensible value.
             </p>
           </div>
         </section>
