@@ -43,6 +43,7 @@ export default function App() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const logoSrc =
     (typeof window !== "undefined" && window.__FALCON_LOGO_URL__) ||
@@ -141,18 +142,28 @@ export default function App() {
         /* Header height estimate (adjust if you tweak logo/brand size) */
         :root { --header-h: 88px; }             /* desktop/tablet */
         @media (max-width: 640px) {
-          :root { --header-h: 104px; }          /* mobile (nav may wrap) */
+          :root { --header-h: 72px; }          /* mobile with cleaner header */
         }
 
         /* Make anchor targets stop below the sticky header */
         section[id] { scroll-margin-top: calc(var(--header-h) + 8px); }
 
-        /* Mobile polish */
+        /* Mobile Navigation */
         @media (max-width: 640px) {
-          header nav { flex-wrap: wrap; gap: 12px; }
+          /* Hide desktop nav, show mobile toggle */
+          .desktop-nav { display: none !important; }
+          .mobile-menu-toggle { display: block !important; }
+          
+          /* Hero and content adjustments */
           #hero-title { font-size: 32px !important; line-height: 1.2; }
           #hero-sub   { font-size: 16px !important; }
           main        { padding-top: 44px !important; padding-bottom: 44px !important; }
+        }
+        
+        /* Desktop Navigation */
+        @media (min-width: 641px) {
+          .mobile-menu-toggle { display: none !important; }
+          .mobile-nav { display: none !important; }
         }
       `}</style>
 
@@ -200,12 +211,60 @@ export default function App() {
             </span>
           </a>
 
-          <nav data-role="nav" style={{ display: "flex", gap: 18 }}>
+          {/* Desktop Navigation */}
+          <nav data-role="nav" className="desktop-nav" style={{ display: "flex", gap: 18 }}>
             <a href="#help" style={linkStyle}>How we help</a>
             <a href="#about" style={linkStyle}>About</a>
             <a href="#contact" style={linkStyle}>Contact</a>
           </nav>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="mobile-menu-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+            style={{
+              display: "none",
+              background: "none",
+              border: "none",
+              padding: 8,
+              cursor: "pointer",
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={NAVY} strokeWidth="2">
+              {mobileMenuOpen ? (
+                <path d="M18 6L6 18M6 6l12 12" />
+              ) : (
+                <>
+                  <path d="M3 12h18M3 6h18M3 18h18" />
+                </>
+              )}
+            </svg>
+          </button>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <nav
+            className="mobile-nav"
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              right: 0,
+              background: "rgba(255,255,255,0.98)",
+              borderBottom: "1px solid #EFF1F4",
+              padding: "16px 24px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            }}
+          >
+            <a href="#help" onClick={() => setMobileMenuOpen(false)} style={{...linkStyle, display: "block", padding: "8px 0"}}>How we help</a>
+            <a href="#about" onClick={() => setMobileMenuOpen(false)} style={{...linkStyle, display: "block", padding: "8px 0"}}>About</a>
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} style={{...linkStyle, display: "block", padding: "8px 0"}}>Contact</a>
+          </nav>
+        )}
       </header>
 
       <main id="top" style={{ ...container, paddingTop: 56, paddingBottom: 60 }}>
