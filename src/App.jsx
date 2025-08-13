@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import emailjs from "@emailjs/browser";
+import TabNavigation from "./TabNavigation";
 
 
 /**
@@ -37,6 +38,139 @@ const FALLBACK_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
    </svg>`
 )}`;
 
+// Hero Loader Component
+function HeroLoader({ onComplete, animationComplete }) {
+  const [textVisible, setTextVisible] = useState(false);
+
+  useEffect(() => {
+    // Start text animation after paths begin
+    setTimeout(() => setTextVisible(true), 500);
+    // Complete animation automatically
+    setTimeout(() => onComplete(), 3000);
+  }, [onComplete]);
+
+  const generatePaths = () => {
+    const paths = [];
+    for (let i = 0; i < 24; i++) {
+      const startX = -380 + i * 15;
+      const startY = -189 + i * 12;
+      const cp1X = -312 + i * 15;
+      const cp1Y = 216 - i * 12;
+      const cp2X = 152 + i * 15;
+      const cp2Y = 343 - i * 12;
+      const endX = 616 + i * 15;
+      const endY = 470 - i * 12;
+      
+      paths.push({
+        id: i,
+        d: `M${startX} ${startY}C${cp1X} ${cp1Y} ${cp2X} ${cp2Y} ${endX} ${endY}`,
+        opacity: 0.05 + i * 0.02,
+        strokeWidth: 0.5 + i * 0.05,
+        duration: 15 + i * 0.5,
+        delay: i * 0.1,
+      });
+    }
+    return paths;
+  };
+
+  const paths = generatePaths();
+  const title = "Falcon View Group";
+  const words = title.split(" ");
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "#fff",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      transition: "opacity 0.8s ease-out",
+      opacity: animationComplete ? 0 : 1,
+    }}>
+      {/* Animated paths background */}
+      <div style={{ position: "absolute", inset: 0 }}>
+        <svg width="100%" height="100%" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice">
+          {paths.map((path) => (
+            <path
+              key={path.id}
+              d={path.d}
+              fill="none"
+              stroke={NAVY}
+              strokeWidth={path.strokeWidth}
+              opacity={path.opacity}
+              style={{
+                animation: `drawPath ${path.duration}s linear infinite`,
+                animationDelay: `${path.delay}s`,
+              }}
+            />
+          ))}
+        </svg>
+      </div>
+
+      {/* Content */}
+      <div style={{
+        position: "relative",
+        zIndex: 10,
+        textAlign: "center",
+        padding: "0 24px",
+        maxWidth: 980,
+      }}>
+        {/* Animated title */}
+        <h1 style={{
+          fontSize: 42,
+          fontWeight: 800,
+          margin: 0,
+          lineHeight: 1.15,
+          letterSpacing: "-0.01em",
+          fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+        }}>
+          {words.map((word, wordIndex) => (
+            <span key={wordIndex} style={{ display: "inline-block", marginRight: 16 }}>
+              {word.split("").map((letter, letterIndex) => (
+                <span
+                  key={`${wordIndex}-${letterIndex}`}
+                  style={{
+                    display: "inline-block",
+                    color: NAVY,
+                    opacity: textVisible ? 1 : 0,
+                    transform: textVisible ? "translateY(0)" : "translateY(60px)",
+                    transition: `all 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
+                    transitionDelay: `${wordIndex * 0.1 + letterIndex * 0.03}s`,
+                  }}
+                >
+                  {letter}
+                </span>
+              ))}
+            </span>
+          ))}
+        </h1>
+      </div>
+
+      <style>{`
+        @keyframes drawPath {
+          0% {
+            stroke-dasharray: 0 1000;
+            stroke-dashoffset: 0;
+          }
+          50% {
+            stroke-dasharray: 1000 1000;
+            stroke-dashoffset: -1000;
+          }
+          100% {
+            stroke-dasharray: 0 1000;
+            stroke-dashoffset: -2000;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export default function App() {
   const [logoOk, setLogoOk] = useState(true);
   const [photoOk, setPhotoOk] = useState(true);
@@ -44,6 +178,9 @@ export default function App() {
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
+  const [animationComplete, setAnimationComplete] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
 
   const logoSrc =
     (typeof window !== "undefined" && window.__FALCON_LOGO_URL__) ||
@@ -90,7 +227,7 @@ export default function App() {
       document.head.appendChild(link);
     }
     emailjs.init(EMAILJS_PUBLIC_KEY);
-    document.title = "Falcon View Group — Strategy & Software";
+    document.title = "Falcon View Group";
   }, []);
 
   async function handleSubmit(e) {
@@ -132,15 +269,40 @@ export default function App() {
     }
   }
 
+  // Handle loader completion
+  const handleLoaderComplete = () => {
+    setAnimationComplete(true);
+    setTimeout(() => {
+      setShowLoader(false);
+      // Start fade-in after a brief delay
+      setTimeout(() => {
+        setContentVisible(true);
+      }, 100);
+    }, 800);
+  };
+
+  if (showLoader) {
+    return (
+      <HeroLoader onComplete={handleLoaderComplete} animationComplete={animationComplete} />
+    );
+  }
+
   return (
-    <div style={{ background: "#fff", minHeight: "100vh" }}>
+    <div style={{ 
+      background: "#fff", 
+      minHeight: "100vh", 
+      position: "relative",
+      opacity: contentVisible ? 1 : 0,
+      transform: contentVisible ? 'translateY(0)' : 'translateY(20px)',
+      transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)',
+    }}>
       {/* Quick CSS: sticky-header offset + mobile polish */}
       <style>{`
         /* Smooth scrolling + anchor offset for sticky header */
         html { scroll-behavior: smooth; }
 
         /* Header height estimate (adjust if you tweak logo/brand size) */
-        :root { --header-h: 88px; }             /* desktop/tablet */
+        :root { --header-h: 104px; }             /* desktop/tablet with tab navigation */
         @media (max-width: 640px) {
           :root { --header-h: 72px; }          /* mobile with cleaner header */
         }
@@ -185,7 +347,8 @@ export default function App() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "12px 24px",
+            padding: "16px 24px",
+            minHeight: "72px",
           }}
         >
           <a
@@ -212,11 +375,9 @@ export default function App() {
           </a>
 
           {/* Desktop Navigation */}
-          <nav data-role="nav" className="desktop-nav" style={{ display: "flex", gap: 18 }}>
-            <a href="#help" style={linkStyle}>How we help</a>
-            <a href="#about" style={linkStyle}>About</a>
-            <a href="#contact" style={linkStyle}>Contact</a>
-          </nav>
+          <div className="desktop-nav">
+            <TabNavigation darkMode={false} />
+          </div>
 
           {/* Mobile Menu Toggle */}
           <button
@@ -267,7 +428,7 @@ export default function App() {
         )}
       </header>
 
-      <main id="top" style={{ ...container, paddingTop: 56, paddingBottom: 60 }}>
+      <main id="top" style={{ ...container, paddingTop: 56, paddingBottom: 60, position: "relative", zIndex: 1 }}>
         {/* Hero */}
         <section aria-labelledby="hero-title" style={{ marginBottom: 8 }}>
           <h1
@@ -474,8 +635,38 @@ export default function App() {
       </main>
 
       <footer style={{ borderTop: "1px solid #EFF1F4" }}>
-        <div style={{ ...container, padding: "20px 24px", color: "#5c6474", fontSize: 14 }}>
-          © {new Date().getFullYear()} Falcon View Group
+        <div style={{ 
+          ...container, 
+          padding: "20px 24px", 
+          color: "#5c6474", 
+          fontSize: 14,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 16
+        }}>
+          <span>© {new Date().getFullYear()} Falcon View Group</span>
+          <a 
+            href="https://www.linkedin.com/company/falcon-view-group/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              color: "#5c6474",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              transition: "color 0.2s ease",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = NAVY}
+            onMouseLeave={(e) => e.currentTarget.style.color = "#5c6474"}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+            </svg>
+            LinkedIn
+          </a>
         </div>
       </footer>
     </div>
