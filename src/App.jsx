@@ -195,8 +195,14 @@ export default function App() {
     fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
     color: "#1f2430",
   };
-  const divider = { borderTop: "1px solid #EFF1F4", margin: "44px 0" };
-  const h2 = { color: NAVY, fontSize: 24, margin: "0 0 10px", fontWeight: 700 };
+  const divider = { borderTop: "1px solid #EFF1F4", margin: "62px 0" };
+  const h2 = { 
+    color: NAVY, 
+    fontSize: 26, 
+    margin: "0 0 16px", 
+    fontWeight: 700,
+    letterSpacing: "-0.02em",
+  };
   const tileWrap = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
@@ -216,7 +222,7 @@ export default function App() {
     borderRadius: 8,
   };
 
-  // Fonts + EmailJS init
+  // Fonts + EmailJS init + Scroll animations
   useEffect(() => {
     if (!document.getElementById("inter-font")) {
       const link = document.createElement("link");
@@ -228,6 +234,8 @@ export default function App() {
     }
     emailjs.init(EMAILJS_PUBLIC_KEY);
     document.title = "Falcon View Group";
+    
+    // Removed scroll animations temporarily
   }, []);
 
   async function handleSubmit(e) {
@@ -289,17 +297,117 @@ export default function App() {
 
   return (
     <div style={{ 
-      background: "#fff", 
+      background: "#f8f9fb", 
       minHeight: "100vh", 
       position: "relative",
       opacity: contentVisible ? 1 : 0,
       transform: contentVisible ? 'translateY(0)' : 'translateY(20px)',
       transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)',
     }}>
+      {/* Abstract Background Design */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
+      >
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 1440 1024"
+          preserveAspectRatio="xMidYMid slice"
+          style={{ opacity: 0.25 }}
+        >
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style={{ stopColor: NAVY, stopOpacity: 0.6 }} />
+              <stop offset="50%" style={{ stopColor: "#1a3a6e", stopOpacity: 0.4 }} />
+              <stop offset="100%" style={{ stopColor: "#0b1d40", stopOpacity: 0.2 }} />
+            </linearGradient>
+            <filter id="blur1">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+            </filter>
+          </defs>
+          
+          {/* Large background circles */}
+          <circle cx="120" cy="150" r="200" fill="url(#grad1)" opacity="0.3" filter="url(#blur1)" />
+          <circle cx="1320" cy="400" r="300" fill={NAVY} opacity="0.15" filter="url(#blur1)" />
+          <circle cx="700" cy="800" r="250" fill="#1a3a6e" opacity="0.2" filter="url(#blur1)" />
+          
+          {/* Flowing paths */}
+          <path
+            d="M0,400 Q360,300 720,400 T1440,400"
+            fill="none"
+            stroke={NAVY}
+            strokeWidth="2"
+            opacity="0.1"
+          />
+          <path
+            d="M0,600 Q360,500 720,600 T1440,600"
+            fill="none"
+            stroke="#1a3a6e"
+            strokeWidth="1.5"
+            opacity="0.08"
+          />
+          
+          {/* Geometric shapes */}
+          <polygon
+            points="1200,100 1350,200 1200,300 1050,200"
+            fill={NAVY}
+            opacity="0.1"
+            transform="rotate(45 1200 200)"
+          />
+          <polygon
+            points="200,700 350,800 200,900 50,800"
+            fill="#1a3a6e"
+            opacity="0.12"
+            transform="rotate(-30 200 800)"
+          />
+        </svg>
+        
+        {/* Additional floating elements */}
+        <div
+          style={{
+            position: "absolute",
+            top: "20%",
+            right: "10%",
+            width: 300,
+            height: 300,
+            background: `radial-gradient(circle, ${NAVY}22 0%, transparent 70%)`,
+            borderRadius: "50%",
+            animation: "float 20s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "10%",
+            left: "5%",
+            width: 400,
+            height: 400,
+            background: "radial-gradient(circle, #1a3a6e18 0%, transparent 70%)",
+            borderRadius: "50%",
+            animation: "float 25s ease-in-out infinite reverse",
+          }}
+        />
+      </div>
+
       {/* Quick CSS: sticky-header offset + mobile polish */}
       <style>{`
         /* Smooth scrolling + anchor offset for sticky header */
         html { scroll-behavior: smooth; }
+        
+        /* Floating animation */
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-30px) scale(1.05); }
+        }
 
         /* Header height estimate (adjust if you tweak logo/brand size) */
         :root { --header-h: 104px; }             /* desktop/tablet with tab navigation */
@@ -308,7 +416,9 @@ export default function App() {
         }
 
         /* Make anchor targets stop below the sticky header */
-        section[id] { scroll-margin-top: calc(var(--header-h) + 8px); }
+        section[id], main[id] { scroll-margin-top: calc(var(--header-h) + 8px); }
+        
+        /* Removed animations temporarily to fix visibility issue */
 
         /* Mobile Navigation */
         @media (max-width: 640px) {
@@ -326,6 +436,13 @@ export default function App() {
         @media (min-width: 641px) {
           .mobile-menu-toggle { display: none !important; }
           .mobile-nav { display: none !important; }
+        }
+        
+        /* Responsive grid for Why AI section */
+        @media (max-width: 768px) {
+          #why-ai-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
 
@@ -428,18 +545,29 @@ export default function App() {
         )}
       </header>
 
-      <main id="top" style={{ ...container, paddingTop: 56, paddingBottom: 60, position: "relative", zIndex: 1 }}>
+      <main id="top" style={{ 
+        ...container, 
+        paddingTop: 56, 
+        paddingBottom: 60, 
+        position: "relative", 
+        zIndex: 1,
+        background: "white",
+        borderRadius: 20,
+        boxShadow: "0 4px 24px rgba(11, 29, 64, 0.08)",
+        marginTop: 24,
+        marginBottom: 24,
+      }}>
         {/* Hero */}
-        <section aria-labelledby="hero-title" style={{ marginBottom: 8 }}>
+        <section aria-labelledby="hero-title" style={{ marginBottom: 8, position: "relative" }}>
           <h1
             id="hero-title"
             style={{
               color: NAVY,
-              fontSize: 42,
+              fontSize: 44,
               lineHeight: 1.15,
-              margin: "0 0 12px",
+              margin: "0 0 16px",
               fontWeight: 800,
-              letterSpacing: "-0.01em",
+              letterSpacing: "-0.02em",
             }}
           >
             Find—and build—advantage with AI
@@ -468,62 +596,272 @@ export default function App() {
           </div>
         </section>
 
-        <div style={divider} />
+        <div style={{ ...divider, position: "relative" }}>
+          <div style={{
+            position: "absolute",
+            top: "-2px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 60,
+            height: 4,
+            background: `linear-gradient(90deg, transparent, ${NAVY}20, transparent)`,
+            borderRadius: 2,
+          }} />
+        </div>
 
         {/* How we help — Strategy + Software with examples */}
         <section id="help" aria-labelledby="help-title">
           <h2 id="help-title" style={h2}>How we help</h2>
           <div style={tileWrap}>
             <div style={tile}>
-              <div data-tile-title style={tileTitle}>Strategy</div>
-              <div style={{ fontSize: 14, color: "#3a4250" }}>
-                We identify where AI can move real metrics, align initiatives to business goals, and design the
-                operating model to support them—governance, risk guardrails, data foundations, and roles. Then we
-                prioritize a practical roadmap, define success metrics, and make buy/build/partner decisions. Opportunity
-                sizing is part of the plan, not the plan.
+              <div data-tile-title style={{ ...tileTitle, fontSize: 17 }}>
+                AI Strategy Consulting
               </div>
+              <div style={{ fontSize: 14, color: "#3a4250", marginBottom: 12 }}>
+                We help organizations understand and exploit AI's potential in their specific market context. Our experience spans from advising professional sports leagues to financial institutions.
+              </div>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13.5, color: "#5c6474" }}>
+                <li>Identify where AI can move real metrics</li>
+                <li>Design operating models with proper governance</li>
+                <li>Create practical roadmaps with clear ROI</li>
+                <li>Make informed buy/build/partner decisions</li>
+              </ul>
             </div>
 
             <div style={tile}>
-              <div data-tile-title style={tileTitle}>Software</div>
-              <div style={{ fontSize: 14, color: "#3a4250" }}>
-                Bespoke apps & automations that embed Machine Learning (ML) and Natural Language Processing (NLP) into real workflows—prototyped with users and shipped fast,
-                with measurement baked in.
+              <div data-tile-title style={{ ...tileTitle, fontSize: 17 }}>
+                Bespoke AI-Powered Software
+              </div>
+              <div style={{ fontSize: 14, color: "#3a4250", marginBottom: 16 }}>
+                Custom applications that leverage AI to solve critical business challenges.
               </div>
               <details style={{ marginTop: 8 }}>
-                <summary style={{ cursor: "pointer", color: NAVY, fontSize: 14 }}>
-                  Show examples ▾
+                <summary style={{ cursor: "pointer", color: NAVY, fontSize: 14, fontWeight: 600 }}>
+                  View examples ▾
                 </summary>
-                <div style={{ fontSize: 13.5, color: "#3a4250", marginTop: 8 }}>
-                  <p style={{ margin: "0 0 8px" }}>
-                    <strong style={{ color: NAVY }}>
-                      <a
-                        href="https://insiderperformance.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: NAVY, textDecoration: "none", borderBottom: `1px solid ${NAVY}` }}
-                      >
-                        InsiderPerformance.com
-                      </a>
-                    </strong>{" "}
-                    — An investment intelligence product that uses ML + NLP to parse insider trading filings (Forms 3/4/5),
-                    derive proprietary features beyond simple net-buy/net-sell, and generate confidence-scored signals.
-                    The system powers watchlists and alerting with an evaluation harness against baselines and live monitoring
-                    for drift.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: NAVY }}>Legal operations (professional sports leagues)</strong> — “legal operations”
-                    tooling combining policy corpus retrieval, semantic search, structured query handling, and AI-assisted drafting
-                    for correspondence. Includes smart document classification and role-aware guardrails, reducing turnaround time
-                    while preserving compliance.
-                  </p>
+                <div style={{ fontSize: 13.5, color: "#3a4250", marginTop: 12 }}>
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontWeight: 600, color: NAVY, marginBottom: 4 }}>
+                      Investment Intelligence Platform
+                    </div>
+                    <a
+                      href="https://insiderperformance.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: NAVY, textDecoration: "none", borderBottom: `1px solid ${NAVY}`, fontSize: 13 }}
+                    >
+                      InsiderPerformance.com
+                    </a>
+                    <ul style={{ margin: "4px 0 0 0", paddingLeft: 20, fontSize: 12.5, color: "#5c6474" }}>
+                      <li>ML + NLP analysis of insider trading filings</li>
+                      <li>Proprietary metrics beyond basic buy/sell signals</li>
+                      <li>Real-time monitoring with drift detection</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: NAVY, marginBottom: 4 }}>
+                      Legal Operations AI
+                    </div>
+                    <div style={{ fontSize: 13, color: "#5c6474", marginBottom: 4 }}>Major Professional Sports Leagues</div>
+                    <ul style={{ margin: "4px 0 0 0", paddingLeft: 20, fontSize: 12.5, color: "#5c6474" }}>
+                      <li>Intelligent policy management & retrieval</li>
+                      <li>AI-powered query processing</li>
+                      <li>Automated drafting with compliance guardrails</li>
+                    </ul>
+                  </div>
                 </div>
               </details>
             </div>
           </div>
         </section>
 
-        <div style={divider} />
+        <div style={{ ...divider, position: "relative" }}>
+          <div style={{
+            position: "absolute",
+            top: "-2px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 60,
+            height: 4,
+            background: `linear-gradient(90deg, transparent, ${NAVY}20, transparent)`,
+            borderRadius: 2,
+          }} />
+        </div>
+
+        {/* Why AI Changes Everything */}
+        <section id="why-ai" aria-labelledby="why-ai-title">
+          <h2 id="why-ai-title" style={{ ...h2, textAlign: "center" }}>Why AI Changes Everything</h2>
+          <p style={{ 
+            fontSize: 16, 
+            color: "#3a4250", 
+            textAlign: "center",
+            maxWidth: 680,
+            marginLeft: "auto",
+            marginRight: "auto",
+            lineHeight: 1.8,
+            marginTop: 24,
+          }}>
+            Traditional software development requires large teams and long timelines. 
+            Our AI-assisted approach enables us to build enterprise-grade solutions with small, 
+            agile teams—rapidly prototyping based on real user feedback and creating custom 
+            ML models tailored to your specific business logic.
+          </p>
+          <div style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: 48,
+            marginTop: 32,
+            flexWrap: "wrap",
+          }}>
+            <div style={{ textAlign: "center", position: "relative" }}>
+              <div style={{ 
+                fontSize: 42, 
+                fontWeight: 700, 
+                color: NAVY, 
+                marginBottom: 6,
+                background: `linear-gradient(135deg, ${NAVY}, #1a3a6e)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>5x</div>
+              <div style={{ fontSize: 13, color: "#5c6474", letterSpacing: "0.5px", textTransform: "uppercase" }}>More efficient</div>
+            </div>
+            <div style={{ textAlign: "center", position: "relative" }}>
+              <div style={{ 
+                fontSize: 42, 
+                fontWeight: 700, 
+                color: NAVY, 
+                marginBottom: 6,
+                background: `linear-gradient(135deg, ${NAVY}, #1a3a6e)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>Small</div>
+              <div style={{ fontSize: 13, color: "#5c6474", letterSpacing: "0.5px", textTransform: "uppercase" }}>Agile teams</div>
+            </div>
+            <div style={{ textAlign: "center", position: "relative" }}>
+              <div style={{ 
+                fontSize: 42, 
+                fontWeight: 700, 
+                color: NAVY, 
+                marginBottom: 6,
+                background: `linear-gradient(135deg, ${NAVY}, #1a3a6e)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>Fast</div>
+              <div style={{ fontSize: 13, color: "#5c6474", letterSpacing: "0.5px", textTransform: "uppercase" }}>Time to market</div>
+            </div>
+          </div>
+        </section>
+
+        <div style={{ ...divider, position: "relative" }}>
+          <div style={{
+            position: "absolute",
+            top: "-2px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 60,
+            height: 4,
+            background: `linear-gradient(90deg, transparent, ${NAVY}20, transparent)`,
+            borderRadius: 2,
+          }} />
+        </div>
+
+        {/* The Falcon View Advantage */}
+        <section id="advantage" aria-labelledby="advantage-title">
+          <h2 id="advantage-title" style={{ ...h2, textAlign: "center" }}>The Falcon View Advantage</h2>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: 16,
+            marginTop: 24,
+          }}>
+            {[
+              {
+                title: "Deep AI Integration",
+                description: "AI at the core, not just chatbots"
+              },
+              {
+                title: "Industry-First",
+                description: "Start with your challenges, not our tech"
+              },
+              {
+                title: "Proven Track Record",
+                description: "From the NFL to Riot Games"
+              },
+              {
+                title: "Future-Proof",
+                description: "Built to evolve with AI"
+              }
+            ].map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  background: "white",
+                  border: "1px solid #E7EAF0",
+                  borderRadius: 12,
+                  padding: "32px 20px 28px",
+                  textAlign: "center",
+                  transition: "all 0.3s ease",
+                  cursor: "default",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(11, 29, 64, 0.08)";
+                  e.currentTarget.style.borderColor = `${NAVY}15`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.borderColor = "#E7EAF0";
+                }}
+              >
+                {/* Subtle geometric accent */}
+                <div style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 3,
+                  background: `linear-gradient(90deg, transparent, ${NAVY}, transparent)`,
+                  opacity: 0.3,
+                }} />
+                {/* Very subtle background gradient */}
+                <div style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: `radial-gradient(circle at top, ${NAVY}03, transparent 70%)`,
+                  pointerEvents: "none",
+                }} />
+                <h3 style={{ color: NAVY, fontSize: 15, margin: "0 0 8px", fontWeight: 700, letterSpacing: "0.3px" }}>
+                  {item.title}
+                </h3>
+                <p style={{ fontSize: 13, color: "#5c6474", margin: 0, lineHeight: 1.5 }}>
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div style={{ ...divider, position: "relative" }}>
+          <div style={{
+            position: "absolute",
+            top: "-2px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 60,
+            height: 4,
+            background: `linear-gradient(90deg, transparent, ${NAVY}20, transparent)`,
+            borderRadius: 2,
+          }} />
+        </div>
 
         {/* Founder — exact text + larger photo */}
         <section id="about" aria-labelledby="about-title">
@@ -548,7 +886,18 @@ export default function App() {
           </div>
         </section>
 
-        <div style={divider} />
+        <div style={{ ...divider, position: "relative" }}>
+          <div style={{
+            position: "absolute",
+            top: "-2px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 60,
+            height: 4,
+            background: `linear-gradient(90deg, transparent, ${NAVY}20, transparent)`,
+            borderRadius: 2,
+          }} />
+        </div>
 
         {/* Contact — EmailJS short form */}
         <section id="contact" aria-labelledby="contact-title">
@@ -634,7 +983,12 @@ export default function App() {
         </section>
       </main>
 
-      <footer style={{ borderTop: "1px solid #EFF1F4" }}>
+      <footer style={{ 
+        borderTop: "1px solid #EFF1F4",
+        background: "white",
+        position: "relative",
+        zIndex: 1,
+      }}>
         <div style={{ 
           ...container, 
           padding: "20px 24px", 
